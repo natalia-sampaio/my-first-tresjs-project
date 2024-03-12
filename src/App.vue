@@ -1,44 +1,31 @@
 <script setup lang="ts">
-import { TresCanvas, useRenderLoop } from '@tresjs/core'
-import { shallowRef, watchEffect } from 'vue'
+import { TresCanvas, useRenderLoop } from '@tresjs/core';
+import { ref } from 'vue';
+import { OrbitControls } from '@tresjs/cientos';
 
-const { onLoop } = useRenderLoop()
+const torusRef = ref();
+const torusPosition = ref([0, 0, 0]);
 
-const cubeRef = shallowRef()
+const { onLoop } = useRenderLoop();
 
 onLoop(({ delta, elapsed }) => {
-  if (cubeRef.value) {
-    cubeRef.value.rotation.y += delta
-    cubeRef.value.rotation.z = elapsed
+  if (!torusRef.value) return;
 
-    cubeRef.value.position.y = Math.sin(elapsed * 2)
-    cubeRef.value.scale.set(Math.sin(elapsed * 2), Math.sin(elapsed * 2), Math.sin(elapsed * 2))
-  }
-})
-
-watchEffect(() => {
-  console.log({ cubeRef })
-})
+  torusRef.value.rotation.x += delta;
+  torusRef.value.rotation.y += delta;
+});
 </script>
 
 <template>
-  <TresCanvas>
-    <TresPerspectiveCamera />
-    <TresMesh ref="cubeRef" :position="[0, 0, 0]">
-      <TresBoxGeometry />
-      <TresMeshNormalMaterial />
-    </TresMesh>
+  <TresCanvas window-size>
+    <TresPerspectiveCamera :args="[75, 1, 0.1, 1000]" :position="[3, 1, 4]" :look-at="[0, 0, 0]" />
+    <OrbitControls />
+    <TresScene>
+      <TresMesh ref="torusRef" :position="torusPosition">
+        <TresTorusKnotGeometry :args="[1, 0.4, 100, 16]" />
+        <TresMeshNormalMaterial />
+      </TresMesh>
+    </TresScene>
     <TresAxesHelper />
   </TresCanvas>
 </template>
-
-<style>
-html,
-body,
-#app {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
-</style>

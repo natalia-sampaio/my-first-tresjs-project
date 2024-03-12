@@ -1,14 +1,8 @@
-import './assets/main.css'
+import { createApp } from 'vue';
+import './style.css';
+import '@tresjs/leches/styles';
+import App from './App.vue';
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+const app = createApp(App);
 
-import App from './App.vue'
-import router from './router'
-
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
+app.mount('#app');

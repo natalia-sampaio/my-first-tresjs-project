@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import { TresCanvas } from '@tresjs/core';
-import { DoubleSide, SRGBColorSpace } from 'three';
-import { OrbitControls } from '@tresjs/cientos';
+import { BasicShadowMap, NoToneMapping, SRGBColorSpace } from 'three';
+import { OrbitControls, Stars } from '@tresjs/cientos';
+import HoustonModel from './HoustonModel.vue';
 
-const positionsArray = new Float32Array([0, 0, 0, 0, 1, 0, 1, 0, 0]);
+const gl = {
+  clearColor: '#181c3e',
+  shadows: true,
+  alpha: false,
+  shadowMapType: BasicShadowMap,
+  outputColorSpace: SRGBColorSpace,
+  toneMapping: NoToneMapping
+};
 </script>
 
 <template>
-  <TresCanvas clear-color="#2c3846" :output-color-space="SRGBColorSpace" alpha>
-    <TresPerspectiveCamera />
+  <TresCanvas v-bind="gl">
+    <TresPerspectiveCamera :position="[5, 5, 5]" :look-at="[0, 1, 0]" />
+    <Stars />
     <OrbitControls />
-    <TresMesh>
-      <TresTorusKnotGeometry :args="[1, 0.4, 32, 32]" />
-      <TresMeshPhysicalMaterial color="silver" :emissive-intensity="0.5" />
-    </TresMesh>
-    <TresMesh :position="[4, 0, 0]">
-      <TresTorusGeometry :args="[1, 0.4, 100, 1000]" />
-      <TresMeshToonMaterial color="pink" />
-    </TresMesh>
-    <TresAmbientLight :args="[0xffffff, 1]" />
-    <TresDirectionalLight :args="[0xffffff, 2]" :position="[0, 4, 0]" />
+    <Suspense>
+      <HoustonModel />
+    </Suspense>
+    <TresAmbientLight :intensity="1" />
+    <TresDirectionalLight :position="[-4, -2, 2]" :intensity="1" cast-shadow color="#fff" />
+    <TresDirectionalLight :position="[4, 6, 4]" :intensity="2" cast-shadow color="white" />
   </TresCanvas>
 </template>
